@@ -82,5 +82,5 @@ Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAv
 ## Reference
 
 - [DISCOSweb](https://discosweb.esoc.esa.int)
-- [CeleTrak](http://www.celestrak.com) and  [SATCAT Format Documentation]([CelesTrak: SATCAT Format Documentation](https://celestrak.org/satcat/satcat-format.php))
+- [CelesTrak](http://www.celestrak.com) and [SATCAT Format Documentation](https://celestrak.org/satcat/satcat-format.php)
 - [Space-Track](https://www.space-track.org/auth/login)
