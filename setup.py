@@ -2,7 +2,7 @@ from setuptools import setup,find_packages
 
 setup(
     name='satcatalogquery',
-    version='0.1.0',
+    version='0.1.1',
     description='A package to handle the space targets catalogue query',
     author='Chunxiao Li',
     author_email='lcx366@126.com',
