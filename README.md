@@ -75,7 +75,7 @@ Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAv
 
 ## Change log
 
-- **0.1.0 — Jan 2,  2023**
+- **0.1.1 — Jan 2,  2023**
   
   - The ***satcatalogquery*** package was released.
 
