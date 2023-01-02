@@ -10,7 +10,7 @@ class SatCatlog(object):
 
     def __init__(self,df,mode):
         self.df = df
-        self.mode = mode
+        self._mode = mode
 
     def __repr__(self):
     
@@ -18,7 +18,7 @@ class SatCatlog(object):
 
     def save(self,dir_catalog=None):
         df = self.df
-        mode = self.mode
+        mode = self._mode
 
         if dir_catalog is None: dir_catalog = 'satcatalogs/' 
         if not path.exists(dir_catalog): makedirs(dir_catalog)   
