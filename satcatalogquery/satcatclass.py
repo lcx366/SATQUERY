@@ -3,6 +3,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import matplotlib.dates as mdates
+import pandas as pd
 
 from .data_download import download_tle
 
@@ -28,6 +29,10 @@ class SatCatlog(object):
         df.to_csv(file_catalog,index = False) # Save the pandas dataframe to a csv-formatted file
 
         return file_catalog   
+
+    def from_csv(csv_file,mode='external'):
+        df = pd.read_csv(csv_file) 
+        return SatCatlog(df,mode)      
 
     def statistics2d(self,x,y,num_bins=50,dir_fig=None):
         """
