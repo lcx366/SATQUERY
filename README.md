@@ -35,45 +35,73 @@ Query by NORAD_ID, where type of NORAD_ID can be int/str, list of int/str,  or a
 
 ```python
 >>> from satcatalogquery import discos_query
->>> satcatog = discos_query(NORAD_ID=[52132,51454,37637,26758,44691])
+>>> satcatlog = discos_query(NORAD_ID=[52132,51454,37637,26758,44691])
 >>> # satcatog = discos_query(NORAD_ID='satno.txt')
 >>> satcatlog.df # output pandas dataframe
 >>> satcatlog.save() # save dataframe to .csv file
->>> satcatlog.statistics1d(['RCSAvg'])
 ```
 
 Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAvg, etc.
 
 ```python
 >>> from satcatalogquery import discos_query
->>> satcatlog = discos_query(SHAPE=['Box','Pan'],RCSAvg=[0.5,100],DECAYED=FALSE)
+>>> satcatlog = discos_query(SHAPE=['Box','Pan'],RCSAvg=[0.5,100],DECAYED=False)
 ```
 
 #### Targets catalogue query from CelesTrak
 
 ```python
 >>> from satcatalogquery import celestrak_query
->>> satcatlog = celestrak_query(MEAN_ALT=[1000,2000],INCLINATION=[40,100],PAYLOAD=FALSE)
->>> satcatlog.statistics1d(['RCSAvg','LAUNCH_DATE'])
->>> satcatlog.statistics12d(['MEAN_ALT','ECC'])
+>>> satcatlog = celestrak_query(MEAN_ALT=[300,2000],ECC=[0.01,0.1],PAYLOAD=False)
 ```
 
-### Targets catalogue query from Combined database
+### Targets catalogue query from combined database
 
 ```python
 >>> from satcatalogquery import targets_query
 >>> satcatlog = targets_query(DECAYED=False,RCSAvg=[0.25,1e4],MEAN_ALT=[250,2000],TLE_STATUS=True,sort='RCSAvg')
->>> satcatlog.statistics1d(['RCSAvg','LAUNCH_DATE'])
->>> satcatlog.statistics12d(['MEAN_ALT','ECC'])
 ```
+
+### Create object `SatCatlog` from a loacl .csv file
+
+```python
+>>> from satcatalogquery import SatCatlog
+>>> satcatlog = SatCatlog.from_csv('filename.csv')
+```
+
+### Statistics
+
+```python
+>>> satcatlog.statistics1d('RCSAvg')
+>>> satcatlog.statistics1d(['StdMag','LAUNCH_DATE'])
+>>> satcat.statistics2d('MEAN_ALT','INCLINATION')
+```
+
+<p align="middle">
+  <img src="readme_figs/RCSAvg.png" width="500" />
+</p>
+
+<p align="middle">
+  <img src="readme_figs/StdMag_LAUNCH_DATE.png" width="500" />
+</p>
+
+<p align="middle">
+  <img src="readme_figs/MEAN_ALT-INCLINATION.png" width="500" />
+</p>
 
 ### Download TLE from results of targets catalogue query
 
 ```python
->>> satcatlog.get_tle()
+>>> tle_path = satcatlog.get_tle()
 ```
 
 ## Change log
+
+- **0.2.0 — Jan 4, 2023**
+  
+  - Add method `from_csv` to class SatCatlog
+  
+  - Add statistics figures to README.md
 
 - **0.1.1 — Jan 2,  2023**
   
