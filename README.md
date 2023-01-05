@@ -72,9 +72,10 @@ Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAv
 ### Statistics
 
 ```python
->>> satcatlog.statistics1d('RCSAvg')
->>> satcatlog.statistics1d(['StdMag','LAUNCH_DATE'])
->>> satcat.statistics2d('MEAN_ALT','INCLINATION')
+>>> satcatlog.hist1d('RCSAvg')
+>>> satcatlog.hist1d(['StdMag','LAUNCH_DATE'])
+>>> satcatlog.hist2d('MEAN_ALT','INCLINATION')
+>>> satcatlog.pie('LAUNCH_SITE',cutoff=100)
 ```
 
 <p align="middle">
@@ -87,6 +88,10 @@ Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAv
 
 <p align="middle">
   <img src="readme_figs/MEAN_ALT-INCLINATION.png" width="500" />
+</p>
+
+<p align="middle">
+  <img src="readme_figs/LAUNCH_SITE.png" width="500" />
 </p>
 
 ### Download TLE from results of targets catalogue query
