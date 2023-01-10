@@ -102,9 +102,9 @@ Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAv
 
 ## Change log
 
-- **0.2.0 — Jan 4, 2023**
+- **0.2.1 — Jan 4, 2023**
   
-  - Add method `from_csv` to class SatCatlog
+  - Add method `from_csv` and `pie` to class SatCatlog
   
   - Add statistics figures to README.md
 
