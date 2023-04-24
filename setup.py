@@ -10,7 +10,7 @@ setup(
     license='MIT',
     long_description_content_type='text/markdown',
     long_description=open('README.md', 'rb').read().decode('utf-8'),
-    keywords = ['DISCOS','CelesTrak'，'SpaceTrack','Space Debris'],
+    keywords = ['DISCOS','CelesTrak','SpaceTrack','Space Debris'],
     python_requires = '>=3.9',
     classifiers=[
         'Development Status :: 4 - Beta',
