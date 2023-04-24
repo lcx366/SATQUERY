@@ -9,7 +9,6 @@ from colorama import Fore
 
 from . import Const
 from . import data_prepare
-from .satcatclass import SatCatlog
 
 
 def _discos_buildin_filter(params,expr):
@@ -17,14 +16,13 @@ def _discos_buildin_filter(params,expr):
     A buildin function associated to the function discos_query. 
 
     Inputs:
-    params -> [dictionary] params in function discos_query
-    expr -> [str] filter expressions for DISCOS, for example, "eq(reentry.epoch,null)". 
+        params -> [dictionary] Parameters in function discos_query
+        expr -> [str] Filter expressions for DISCOS database query, for example, "eq(reentry.epoch,null)". 
 
     Outputs:
-    params_upgrade -> [dictionary] upgraded variable params in function discos_query    
+        params_upgrade -> [dictionary] upgraded parameters in function discos_query    
 
     For more infomation, please reference to https://discosweb.esoc.esa.int/apidocs
-
     """
     if 'filter' in params.keys(): 
         params['filter'] += '&(' + expr + ')'
@@ -32,36 +30,36 @@ def _discos_buildin_filter(params,expr):
         params['filter'] = expr 
     return params  
 
-def discos_query(COSPAR_ID=None,NORAD_ID=None,OBJECT_CLASS=None,PAYLOAD=None,DECAYED=None,DECAY_DATE=None,MASS=None,SHAPE=None,LENGTH=None,HEIGHT=None,DEPTH=None,RCSMin=None,RCSMax=None,RCSAvg=None,sort=None):
+def _discos_query(COSPAR_ID=None,NORAD_ID=None,OBJECT_CLASS=None,PAYLOAD=None,DECAYED=None,DECAY_DATE=None,MASS=None,SHAPE=None,LENGTH=None,HEIGHT=None,DEPTH=None,RCSMin=None,RCSMax=None,RCSAvg=None,sort=None):
     """
-    Query space targets by setting a series of specific parameters from the [DISCOS](https://discosweb.esoc.esa.int)(Database and Information System Characterising Objects in Space) database.
+    Given the geometric constraints of a spatial object, query the qualified spatial objects from the [DISCOS](https://discosweb.esoc.esa.int)(Database and Information System Characterising Objects in Space) database.
 
     Usage: 
-    satcatlog = discos_query(DECAYED=False,RCSAvg=[5,15])
+        satcatalog_df = discos_query(DECAYED=False,RCSAvg=[5,15])
 
-    Parameters:
-    COSPAR_ID -> [str or list of str, optional, default = None] Target IDs by the in Committee On SPAce Research; if None, this option is ignored. 
-    NORAD_ID -> [int, str, list, or filename(such as noradids.txt), optional, default = None] Target IDs by the North American Aerospace Defense Command; if None, this option is ignored.
-    OBJECT_CLASS -> [str or list of str, optional, default = None] Classification of targets; avaliable options include 'Payload', 'Payload Debris', 'Payload Fragmentation Debris', 
-    'Payload Mission Related Object', 'Rocket Body', 'Rocket Debris', 'Rocket Fragmentation Debris', 'Rocket Mission Related Object', 'Other Mission Related Object','Other Debris', Unknown', or any combination of them, 
-    for examle, ['Rocket Body', 'Rocket Debris', 'Rocket Fragmentation Debris']; If None, this option is ignored.  
-    PAYLOAD -> [bool, optional, default  = None] Identify whether a target belongs to payload or not. If True, payload; if False, non-payload; if None, this option is ignored.
-    DECAYED -> [bool, optional, default = None] it also called reentry; If False, targets are still in orbit by now; if True, then reentry; if None, this option is ignored.
-    DECAY_DATE -> [list of str with 2 elemnts, optional, default = None] Date of reentry; it must be in form of ['date1','date2'], such as ['2019-01-05','2020-05-30']; if None, then this option is ignored.
-    MASS -> [list of float with 2 elemnts, optional, default = None] Mass[kg] of a target; it must be in form of [m1,m2], such as [5.0,10.0]; if None, this option is ignored.
-    SHAPE -> [str or list of str, optional, default = None] Shape of targets; commonly used options include 'Cyl', 'Sphere', 'Cone', 'Dcone', Pan', 'Ell', 'Dish', 'Cable', 'Box', 'Rod', 'Poly', 'Sail', 'Ant', 
-    'Frust', 'Truss', 'Nozzle', and 'lrr'. Any combinations of them are also supported, for examle, ['Cyl', 'Sphere', 'Pan'] means 'or', and ['Cyl', 'Sphere', 'Pan', '+'] means 'and'; If None, this option is ignored.  
-    LENGTH -> [list of float with 2 elemnts, optional, default = None] Length[m] of a target; it must be in form of [l1,l2], such as [5.0,10.0]; if None, this option is ignored.
-    HEIFHT -> [list of float with 2 elemnts, optional, default = None] Height[m] of a target; it must be in form of [h1,h2], such as [5.0,10.0]; if None, this option is ignored.
-    DEPTH -> [list of float with 2 elemnts, optional, default = None] Depth[m] of a target; it must be in form of [d1,d2], such as [5.0,10.0]; if None, this option is ignored.
-    RCSMin -> [list of float with 2 elemnts, optional, default = None] Minimum Radar Cross Section[m2] of a target; it must be in form of [RCS1,RCS2], such as [0.5,2.0]; if None, this option is ignored.
-    RCSMax -> [list of float with 2 elemnts, optional, default = None] Maximum Radar Cross Section[m2] of a target; it must be in form of [RCS1,RCS2], such as [10.0,100.0]; if None, this option is ignored.
-    RCSAvg -> [list of float with 2 elemnts, optional, default = None] Average Radar Cross Section[m2] of a target; it must be in form of [RCS1,RCS2], such as [5,20]; if None, this option is ignored.
-    sort -> [str, optional, default = None] sort by features of targets in a specific order, such as by mass; avaliable options include 'COSPARID', NORADID', 'ObjectClass', 'DecayDate', 'Mass', 'Shape', 'Length', 'Height', 'Depth', 'RCSMin', 'RSCMax', and 'RCSAvg'.
-    If there is a negative sign '-' ahead, such as "-Mass", it will be sorted in descending order. If None, then sort by NORADID by default.
+    Inputs:
+        COSPAR_ID -> [str or list of str, optional, default = None] object IDs defined by the Committee On SPAce Research; if None, this option is ignored. 
+        NORAD_ID -> [int, str, list, or filename(such as 'noradids.txt'), optional, default = None] object IDs defined by the North American Aerospace Defense Command; if None, this option is ignored.
+        OBJECT_CLASS -> [str, list of str, optional, default = None] Classification of objects; available options are 'Payload', 'Payload Debris', 'Payload Fragmentation Debris', 
+        'Payload Mission Related Object', 'Rocket Body', 'Rocket Debris', 'Rocket Fragmentation Debris', 'Rocket Mission Related Object', 'Other Mission Related Object','Other Debris', Unknown', or any combination of them, 
+        for example, ['Rocket Body', 'Rocket Debris', 'Rocket Fragmentation Debris']; If None, this option is ignored.  
+        PAYLOAD -> [bool, optional, default = None] Whether an object is payload or not. If True, the object is a payload; if False, not a payload; if None, this option is ignored.
+        DECAYED -> [bool, optional, default = None] Whether an object is  decayed(re-entry) or not; If False, the object is still in orbit by now; if True, then decayed; if None, this option is ignored.
+        DECAY_DATE -> [list of str, optional, default = None] Date range of decay; it must be in form of ['date1','date2'], such as ['2019-01-05','2020-05-30']; if None, then this option is ignored.
+        MASS -> [list of float, optional, default = None] Mass[kg] range of an object; it must be in form of [m1,m2], such as [5.0,10.0]; if None, this option is ignored.
+        SHAPE -> [str or list of str, optional, default = None] Shape of an object; the usual choices include 'Cyl', 'Sphere', 'Cone', 'Dcone', Pan', 'Ell', 'Dish', 'Cable', 'Box', 'Rod', 'Poly', 'Sail', 'Ant', 
+        'Frust', 'Truss', 'Nozzle', and 'lrr'. Any combination of them is also supported, for examle, ['Cyl', 'Sphere', 'Pan'] means 'or', and ['Cyl', 'Sphere', 'Pan', '+'] means 'and'; If None, this option is ignored.  
+        LENGTH -> [list of float, optional, default = None] Length[m] range of an object; it must be in form of [l1,l2], such as [5.0,10.0]; if None, this option is ignored.
+        HEIFHT -> [list of float, optional, default = None] Height[m] range of an object; it must be in form of [h1,h2], such as [5.0,10.0]; if None, this option is ignored.
+        DEPTH -> [list of float, optional, default = None] Depth[m] range of an object; it must be in form of [d1,d2], such as [5.0,10.0]; if None, this option is ignored.
+        RCSMin -> [list of float, optional, default = None] Minimum Radar Cross Section(RCS)[m2] of an object; if None, this option is ignored.
+        RCSMax -> [list of float, optional, default = None] Maximum Radar Cross Section(RCS)[m2] of an object; if None, this option is ignored.
+        RCSAvg -> [list of float, optional, default = None] Average Radar Cross Section(RCS)[m2] of an object; if None, this option is ignored.
+        sort -> [str, optional, default = None] Sort according to attributes of spatial objects, such as mass; available options include 'COSPARID', NORADID', 'ObjectClass', 'DecayDate', 'Mass', 'Shape', 'Length', 'Height', 'Depth', 'RCSMin', 'RSCMax', and 'RCSAvg'.
+        If the attribute is prefixed with a '-', such as '-Mass', it will be sorted in descending order. If None, the spatial objects are sorted by NORADID by default.
     
     Outputs:
-    satcatlog -> instance of class SatCatlog
+        satcatalog_df -> Data frame containing the selected spatial objects
     """
     # DISCOS tokens
     home = str(Path.home())
@@ -274,38 +272,39 @@ def discos_query(COSPAR_ID=None,NORAD_ID=None,OBJECT_CLASS=None,PAYLOAD=None,DEC
     df = pd.DataFrame.from_dict(extract,dtype=object).rename(columns=dict(zip(old_column, new_column)), errors='raise')
     df = df.reindex(columns=new_column_reorder) 
     df = df.reset_index(drop=True)
-    mode = 'discos_catlog'
+    
+    return df 
 
-    return SatCatlog(df,mode)   
-
-def celestrak_query(COSPAR_ID=None,NORAD_ID=None,PAYLOAD=None,DECAYED=None,DECAY_DATE=None,PERIOD=None,INCLINATION=None,APOGEE=None,PERIGEE=None,MEAN_ALT=None,ECC=None,OWNER=None,TLE_STATUS=None,sort=None):
+def _celestrak_query(COSPAR_ID=None,NORAD_ID=None,PAYLOAD=None,DECAYED=None,DECAY_DATE=None,PERIOD=None,INCLINATION=None,APOGEE=None,PERIGEE=None,MEAN_ALT=None,ECC=None,OWNER=None,TLE_STATUS=None,sort=None):
     """
-    Query space targets that meet the requirements by setting a series of specific parameters from the [CELESTRAK](https://celestrak.com) database.
+    Given the orbital constraints of a space object, query the qualified space objects from the [CELESTRAK](https://celestrak.com) database.
 
     Usage:
-    satcatlog = celestrak_query(DECAYED=False,MEAN_ALT=[400,900])
+        satcatalog_df = celestrak_query(DECAYED=False,MEAN_ALT=[400,900])
 
-    Parameters:
-    COSPAR_ID     -> [str or list of str, optional, default = None] Target IDs by the in Committee On SPAce Research; if None, this option is ignored.
-    NORAD_ID      -> [int, str, list, or filename(such as noradids.txt), optional, default = None] Target IDs by the North American Aerospace Defense Command; if None, this option is ignored.
-    PAYLOAD       -> [bool, optional, default = None] Identify whether a target belongs to payload or not. If True, payload; if False, non-payload; if None, this option is ignored.
-    DECAYED       -> [bool, optional, default = None] It also called reentry; if False, targets are still in orbit by now; if True, then reentry; if None, this option is ignored.
-    DECAY_DATE    -> [list of str with 2 elemnts, optional, default = None] Date of reentry; it must be in form of ['date1','date2'], such as ['2019-01-05','2020-05-30']; if None, this option is ignored.
-    PERIOD        -> [list of float with 2 elemnts, optional, default = None] Orbit period[minutes] of targets; it must be in form of [period1,period2], such as [100.0,200.0]; if None, this option is ignored.  
-    INCLINATION   -> [list of float with 2 elemnts, optional, default = None] Orbit inclination[degrees] of targets; must be in form of [inc1,inc2], such as [45.0,80.0]; if None, this option is ignored.  
-    APOGEE        -> [list of float with 2 elemnts, optional, default = None] Apogee Altitude[km] of targets; it must be in form of [apoalt1,apoalt2], such as [800.0,1400.0]; if None, this option is ignored.  
-    PERIGEE       -> [list of float with 2 elemnts, optional, default = None] Perigee Altitude[km] of targets; it must be in form of [peralt1,peralt2], such as [300.0,400.0]; if None, this option is ignored.  
-    MEAN_ALT      -> [list of float with 2 elemnts, optional, default = None] Mean Altitude[km] of targets; it must be in form of [meanalt1,meanalt2], such as [300.0,800.0]; if None, then option is ignored. 
-    ECC           -> [list of float with 2 elemnts, optional, default = None] Eccentricity of targets; it must be in form of [ecc1,ecc2], such as [0.01,0.2]; if None, then option is ignored.   
-    OWNER         -> [str or list of str, optional, default = None] Satellite Ownership; country codes/names can be found at http://www.fao.org/countryprofiles/iso3list/en/; if None, this option is ignored.
-    TLE_STATUS    -> [bool, optional, default = None] Identify whether a TLE is valid. If True, TLE is valid; if False, No Current Elements, No Initial Elements, or No Elements Available; if None, this option is ignored.
-    sort          -> [str, optional, default = None] sort by features of targets in a specific order; avaliable options include 'COSPAR_ID', NORAD_ID', 'DECAY_DATE', 'PERIOD', 'INCLINATION', 'APOGEE', 'PERIGEE', 'MEAN_ALT', 'ECC',and 'OWNER'.
-    If there is a negative sign '-' ahead, such as "-DecayDate", it will be sorted in descending order. If None, then sort by NORADID by default.
+    Inputs:
+        COSPAR_ID -> [str or list of str, optional, default = None] object IDs defined by the Committee On SPAce Research; if None, this option is ignored. 
+        NORAD_ID -> [int, str, list, or filename(such as 'noradids.txt'), optional, default = None] object IDs defined by the North American Aerospace Defense Command; if None, this option is ignored.
+        PAYLOAD -> [bool, optional, default = None] Whether an object is payload or not. If True, the object is a payload; if False, not a payload; if None, this option is ignored.
+        DECAYED -> [bool, optional, default = None] Whether an object is  decayed(re-entry) or not; If False, the object is still in orbit by now; if True, then decayed; if None, this option is ignored.
+        DECAY_DATE -> [list of str, optional, default = None] Date range of decay; it must be in form of ['date1','date2'], such as ['2019-01-05','2020-05-30']; if None, then this option is ignored.
+        PERIOD -> [list of float, optional, default = None] Orbital period[minutes] range of a space object; it must be in form of [period1,period2], such as [100.0,200.0]; if None, this option is ignored.  
+        INCLINATION -> [list of float, optional, default = None] Range of inclination[degrees] of a space object; it must be in form of [inc1,inc2], such as [45.0,80.0]; if None, this option is ignored.  
+        APOGEE -> [list of float, optional, default = None] Range of Apogee Altitude[km]; it must be in form of [apoalt1,apoalt2], such as [800.0,1400.0]; if None, this option is ignored.  
+        PERIGEE -> [list of float, optional, default = None] Range of Perigee Altitude[km]; it must be in form of [peralt1,peralt2], such as [300.0,400.0]; if None, this option is ignored.  
+        MEAN_ALT -> [list of float, optional, default = None] Mean Altitude[km] of objects; it must be in form of [meanalt1,meanalt2], such as [300.0,800.0]; if None, then option is ignored. 
+        ECC -> [list of float, optional, default = None] Range of Eccentricity; it must be in form of [ecc1,ecc2], such as [0.01,0.2]; if None, then option is ignored.   
+        OWNER -> [str or list of str, optional, default = None] Ownership of a space object; and country codes/names can be found at http://www.fao.org/countryprofiles/iso3list/en/; if None, this option is ignored.
+        TLE_STATUS -> [bool, optional, default = None] Whether a TLE is valid. If False, it means No Current Elements, No Initial Elements, or No Elements Available; if None, this option is ignored.
+        sort -> [str, optional, default = None] Sort according to attributes of a spatial object, such as MEAN_ALT; available options include 'COSPAR_ID', NORAD_ID', 'DECAY_DATE', 'PERIOD', 'INCLINATION', 'APOGEE', 'PERIGEE', 'MEAN_ALT', 'ECC',and 'OWNER'.
+        If the attribute is prefixed with a '-', such as '-DecayDate', it will be sorted in descending order. If None, the spatial objects are sorted by NORADID by default.
     
     Outputs:
-    satcatlog -> instance of class SatCatlog
-    """
+        satcatalog_df -> Data frame containing the selected spatial objects
+    """  
 
+    # Load and update the satcat files from the [CELESTRAK](https://celestrak.com) database.
+    data_prepare.satcat_load()
     satcat_file = data_prepare.sc_file
 
     data = pd.read_csv(satcat_file) 
@@ -483,68 +482,68 @@ def celestrak_query(COSPAR_ID=None,NORAD_ID=None,PAYLOAD=None,DECAYED=None,DECAY
         else:
             raise Exception("Avaliable options include 'COSPAR_ID', NORAD_ID', 'DECAY_DATE', 'PERIOD', 'INCLINATION', 'APOGEE', 'PERIGEE', 'MEAN_ALT', 'ECC', 'LAUNCH_DATE', 'LAUNCH_SITE', 'RCS', and 'OWNER'. Also, a negative sign '-' can be added ahead to the option to sort in descending order.")
     df = df.reset_index(drop=True)
-    mode = 'celestrak_catlog'
 
-    return SatCatlog(df,mode)
+    return df
 
 def parseQSMagFile():
-    '''
-    Read and parse the qs.mag file for getting noradid and standard(intrinsic) magnitude for satellites.
-    '''
+    """
+    Get the noradid and standard(intrinsic) magnitude for space objects by reading and parsing the qs.mag file.
+    """
+
+    # Load and update the QSMag files from https://www.prismnet.com/~mmccants/programs/qsmag.zip
+    data_prepare.qsmag_load()
     qsfile = data_prepare.qs_file
 
     qsmag = np.genfromtxt(qsfile,skip_header=1,skip_footer=1,delimiter=[5,28,5],dtype=(int,str,float)) 
     df_qsmag = pd.DataFrame(qsmag).drop(columns=['f1']).rename(columns={"f0": "NORAD_ID", "f2": "StdMag"})
     return df_qsmag         
 
-def targets_query(COSPAR_ID=None,NORAD_ID=None,PAYLOAD=None,OBJECT_CLASS=None,DECAYED=None,DECAY_DATE=None,PERIOD=None,INCLINATION=None,APOGEE=None,PERIGEE=None,MEAN_ALT=None,ECC=None,TLE_STATUS=None,MASS=None,SHAPE=None,LENGTH=None,HEIGHT=None,DEPTH=None,RCSMin=None,RCSMax=None,RCSAvg=None,OWNER=None,sort=None):
+def _objects_query(COSPAR_ID=None,NORAD_ID=None,PAYLOAD=None,OBJECT_CLASS=None,DECAYED=None,DECAY_DATE=None,PERIOD=None,INCLINATION=None,APOGEE=None,PERIGEE=None,MEAN_ALT=None,ECC=None,TLE_STATUS=None,MASS=None,SHAPE=None,LENGTH=None,HEIGHT=None,DEPTH=None,RCSMin=None,RCSMax=None,RCSAvg=None,OWNER=None,sort=None):
     """
-    Query space targets that meet the requirements by setting a series of specific parameters from the the [DISCOS](https://discosweb.esoc.esa.int)(Database and Information System Characterising Objects in Space) database and the [CELESTRAK](https://celestrak.com) database.
+    Given the geometric and orbital constraints of a space object, query the qualified space objects from the [DISCOS](https://discosweb.esoc.esa.int)(Database and Information System Characterising Objects in Space) database and the [CELESTRAK](https://celestrak.com) database.
 
     Usage: 
-    satcatlog = targets_query(PAYLOAD=False,DECAYED=False,MEAN_ALT=[400,900],RCSAvg=[5,15])
+        satcatalog_df = objects_query(PAYLOAD=False,DECAYED=False,MEAN_ALT=[400,900],RCSAvg=[5,15])
 
-    Parameters:
-    COSPAR_ID     -> [str or list of str, optional, default = None] Target IDs by the in Committee On SPAce Research; if None, this option is ignored.
-    NORAD_ID      -> [int, str, list, or filename(such as noradids.txt), optional, default = None] Target IDs by the North American Aerospace Defense Command; if None, this option is ignored.
-    PAYLOAD       -> [bool, optional, fafault = None] Identify whether a target belongs to payload or not. If True, then targets belong to payload; if False, then non-payload; if None, then this option is ignored.
-    OBJECT_CLASS  -> [str or list of str, optional, default = None] Classification of targets; avaliable options include 'Payload', 'Payload Debris', 'Payload Fragmentation Debris', 
-    'Payload Mission Related Object', 'Rocket Body', 'Rocket Debris', 'Rocket Fragmentation Debris', 'Rocket Mission Related Object', 'Other Mission Related Object','Other Debris', Unknown', or any combination of them, 
-    for examle, ['Rocket Body', 'Rocket Debris', 'Rocket Fragmentation Debris']; If None, this option is ignored.
-    
-    DECAYED       -> [bool, optional, default = None] it also called reentry; If False, targets are still in orbit by now; if True, then reentry; if None, this option is ignored.
-    DECAY_DATE    -> [list of str with 2 elemnts, optional, default = None] Date of reentry; it must be in form of ['date1','date2'], such as ['2019-01-05','2020-05-30']; if None, then this option is ignored.
-    PERIOD        -> [list of float with 2 elemnts, optional, default = None] Orbit period[minutes] of targets; it must be in form of [period1,period2], such as [100.0,200.0]; if None, this option is ignored.  
-    INCLINATION   -> [list of float with 2 elemnts, optional, default = None] Orbit inclination[degrees] of targets; must be in form of [inc1,inc2], such as [45.0,80.0]; if None, this option is ignored.  
-    APOGEE        -> [list of float with 2 elemnts, optional, default = None] Apogee Altitude[km] of targets; it must be in form of [apoalt1,apoalt2], such as [800.0,1400.0]; if None, this option is ignored.  
-    PERIGEE       -> [list of float with 2 elemnts, optional, default = None] Perigee Altitude[km] of targets; it must be in form of [peralt1,peralt2], such as [300.0,400.0]; if None, this option is ignored.  
-    MEAN_ALT      -> [list of float with 2 elemnts, optional, default = None] Mean Altitude[km] of targets; it must be in form of [meanalt1,meanalt2], such as [300.0,800.0]; if None, then option is ignored. 
-    ECC           -> [list of float with 2 elemnts, optional, default = None] Eccentricity of targets; it must be in form of [ecc1,ecc2], such as [0.01,0.2]; if None, then option is ignored.   
-    TLE_STATUS    -> [bool, optional, default = None] Identify whether a TLE is valid. If True, TLE is valid; if False, No Current Elements, No Initial Elements, or No Elements Available; if None, this option is ignored.
-    MASS          -> [list of float with 2 elemnts, optional, default = None] Mass[kg] of a target; it must be in form of [m1,m2], such as [5.0,10.0]; if None, this option is ignored.
-    SHAPE -> [str or list of str, optional, default = None] Shape of targets; commonly used options include 'Cyl', 'Sphere', 'Cone', 'Dcone', Pan', 'Ell', 'Dish', 'Cable', 'Box', 'Rod', 'Poly', 'Sail', 'Ant', 
-    'Frust', 'Truss', 'Nozzle', and 'lrr'. Any combinations of them are also supported, for examle, ['Cyl', 'Sphere', 'Pan'] means 'or', and ['Cyl', 'Sphere', 'Pan', '+'] means 'and'; If None, this option is ignored.  
-    LENGTH        -> [list of float with 2 elemnts, optional, default = None] Length[m] of a target; it must be in form of [l1,l2], such as [5.0,10.0]; if None, this option is ignored.
-    HEIGHT        -> [list of float with 2 elemnts, optional, default = None] Height[m] of a target; it must be in form of [h1,h2], such as [5.0,10.0]; if None, this option is ignored.
-    DEPTH         -> [list of float with 2 elemnts, optional, default = None] Depth[m] of a target; it must be in form of [d1,d2], such as [5.0,10.0]; if None, this option is ignored.
-    RCSMin        -> [list of float with 2 elemnts, optional, default = None] Minimum Radar Cross Section[m2] of a target; it must be in form of [RCS1,RCS2], such as [0.5,2.0]; if None, this option is ignored.
-    RCSMax        -> [list of float with 2 elemnts, optional, default = None] Maximum Radar Cross Section[m2] of a target; it must be in form of [RCS1,RCS2], such as [10.0,100.0]; if None, this option is ignored.
-    RCSAvg        -> [list of float with 2 elemnts, optional, default = None] Average Radar Cross Section[m2] of a target; it must be in form of [RCS1,RCS2], such as [5,20]; if None, this option is ignored.
-    OWNER       -> [str or list of str, optional, default = None] Satellite Ownership; country codes/names can be found at http://www.fao.org/countryprofiles/iso3list/en/; if None, this option is ignored.
-    sort          -> [str, optional, default = None] sort by features of targets in a specific order, such as by mass; avaliable options include 'COSPAR_ID', NORAD_ID', 'OBJECT_CLASS', 'MASS', 'DECAY_DATE', 'SHAPE', 
-    'LENGTH', 'HEIGHT', 'DEPTH', 'RCSMin', 'RSCMax', 'RCSAvg', 'PERIOD', 'INCLINATION', 'APOGEE', 'PERIGEE', 'MEAN_ALT', 'ECC', and 'OWNER'.
-    If there is a negative sign '-' ahead, such as "-RCSAvg", it will be sorted in descending order. If None, then sort by NORADID by default.
+    Inputs:
+        COSPAR_ID -> [str or list of str, optional, default = None] object IDs defined by the Committee On SPAce Research; if None, this option is ignored. 
+        NORAD_ID -> [int, str, list, or filename(such as 'noradids.txt'), optional, default = None] object IDs defined by the North American Aerospace Defense Command; if None, this option is ignored.
+        OBJECT_CLASS -> [str, list of str, optional, default = None] Classification of objects; available options are 'Payload', 'Payload Debris', 'Payload Fragmentation Debris', 
+        'Payload Mission Related Object', 'Rocket Body', 'Rocket Debris', 'Rocket Fragmentation Debris', 'Rocket Mission Related Object', 'Other Mission Related Object','Other Debris', Unknown', or any combination of them, 
+        for example, ['Rocket Body', 'Rocket Debris', 'Rocket Fragmentation Debris']; If None, this option is ignored.  
+        DECAYED -> [bool, optional, default = None] Whether an object is  decayed(re-entry) or not; If False, the object is still in orbit by now; if True, then decayed; if None, this option is ignored.
+        DECAY_DATE -> [list of str, optional, default = None] Date range of decay; it must be in form of ['date1','date2'], such as ['2019-01-05','2020-05-30']; if None, then this option is ignored.
+        PERIOD -> [list of float, optional, default = None] Orbital period[minutes] range of a space object; it must be in form of [period1,period2], such as [100.0,200.0]; if None, this option is ignored.  
+        INCLINATION -> [list of float, optional, default = None] Range of inclination[degrees] of a space object; it must be in form of [inc1,inc2], such as [45.0,80.0]; if None, this option is ignored.  
+        APOGEE -> [list of float, optional, default = None] Range of Apogee Altitude[km]; it must be in form of [apoalt1,apoalt2], such as [800.0,1400.0]; if None, this option is ignored.  
+        PERIGEE -> [list of float, optional, default = None] Range of Perigee Altitude[km]; it must be in form of [peralt1,peralt2], such as [300.0,400.0]; if None, this option is ignored.  
+        MEAN_ALT -> [list of float, optional, default = None] Mean Altitude[km] of objects; it must be in form of [meanalt1,meanalt2], such as [300.0,800.0]; if None, then option is ignored. 
+        ECC -> [list of float, optional, default = None] Range of Eccentricity; it must be in form of [ecc1,ecc2], such as [0.01,0.2]; if None, then option is ignored.   
+        TLE_STATUS -> [bool, optional, default = None] Whether a TLE is valid. If False, it means No Current Elements, No Initial Elements, or No Elements Available; if None, this option is ignored.
+        MASS -> [list of float, optional, default = None] Mass[kg] range of an object; it must be in form of [m1,m2], such as [5.0,10.0]; if None, this option is ignored.
+        SHAPE -> [str or list of str, optional, default = None] Shape of an object; the usual choices include 'Cyl', 'Sphere', 'Cone', 'Dcone', Pan', 'Ell', 'Dish', 'Cable', 'Box', 'Rod', 'Poly', 'Sail', 'Ant', 
+        'Frust', 'Truss', 'Nozzle', and 'lrr'. Any combination of them is also supported, for examle, ['Cyl', 'Sphere', 'Pan'] means 'or', and ['Cyl', 'Sphere', 'Pan', '+'] means 'and'; If None, this option is ignored.  
+        LENGTH -> [list of float, optional, default = None] Length[m] range of an object; it must be in form of [l1,l2], such as [5.0,10.0]; if None, this option is ignored.
+        HEIFHT -> [list of float, optional, default = None] Height[m] range of an object; it must be in form of [h1,h2], such as [5.0,10.0]; if None, this option is ignored.
+        DEPTH -> [list of float, optional, default = None] Depth[m] range of an object; it must be in form of [d1,d2], such as [5.0,10.0]; if None, this option is ignored.
+        RCSMin -> [list of float, optional, default = None] Minimum Radar Cross Section(RCS)[m2] of an object; if None, this option is ignored.
+        RCSMax -> [list of float, optional, default = None] Maximum Radar Cross Section(RCS)[m2] of an object; if None, this option is ignored.
+        RCSAvg -> [list of float, optional, default = None] Average Radar Cross Section(RCS)[m2] of an object; if None, this option is ignored.
+        OWNER -> [str or list of str, optional, default = None] Ownership of a space object; and country codes/names can be found at http://www.fao.org/countryprofiles/iso3list/en/; if None, this option is ignored.
+        sort -> [str, optional, default = None] Sort according to attributes of a spatial object, such as by mass; available options include 'COSPAR_ID', NORAD_ID', 'OBJECT_CLASS', 'MASS', 'DECAY_DATE', 'SHAPE', 
+        'LENGTH', 'HEIGHT', 'DEPTH', 'RCSMin', 'RSCMax', 'RCSAvg', 'PERIOD', 'INCLINATION', 'APOGEE', 'PERIGEE', 'MEAN_ALT', 'ECC', and 'OWNER'.
+        If the attribute is prefixed with a '-', such as "-RCSAvg", it will be sorted in descending order. If None, the spatial objects are sorted by NORADID by default.
     
     Outputs:
-    satcatlog -> instance of class SatCatlog
-    """
+        satcatalog_df -> Data frame containing the selected spatial objects
+    """ 
     # Query space targets from the CELESTRAK database
-    df_celestrak = celestrak_query(COSPAR_ID,NORAD_ID,PAYLOAD,DECAYED,DECAY_DATE,PERIOD,INCLINATION,APOGEE,PERIGEE,MEAN_ALT,ECC,OWNER,TLE_STATUS).df.drop('OBJECT_NAME',axis=1)
+    df_celestrak = _celestrak_query(COSPAR_ID,NORAD_ID,PAYLOAD,DECAYED,DECAY_DATE,PERIOD,INCLINATION,APOGEE,PERIGEE,MEAN_ALT,ECC,OWNER,TLE_STATUS).drop('OBJECT_NAME',axis=1)
     # Query space targets from the DISCOS database
     noradids = list(df_celestrak['NORAD_ID'])
     if len(noradids) > 1000: noradids = NORAD_ID
     print('Go through the DISCOS database ... ')    
-    df_discos = discos_query(COSPAR_ID,noradids,OBJECT_CLASS,PAYLOAD,DECAYED,DECAY_DATE,MASS,SHAPE,LENGTH,HEIGHT,DEPTH,RCSMin,RCSMax,RCSAvg).df.dropna(subset=['NORAD_ID'])
+    df_discos = _discos_query(COSPAR_ID,noradids,OBJECT_CLASS,PAYLOAD,DECAYED,DECAY_DATE,MASS,SHAPE,LENGTH,HEIGHT,DEPTH,RCSMin,RCSMax,RCSAvg).dropna(subset=['NORAD_ID'])
 
     # Merge the CELESTRAK database and the DISCOS database
     df = pd.merge(df_celestrak, df_discos, on=['COSPAR_ID','NORAD_ID'],validate="one_to_one")
@@ -614,6 +613,4 @@ def targets_query(COSPAR_ID=None,NORAD_ID=None,PAYLOAD=None,OBJECT_CLASS=None,DE
                 'APOGEE', 'PERIGEE', 'MEAN_ALT', 'ECC', 'MASS','LENGTH','DEPTH','HEIGHT', 'RCSMin','RCSMax', 'RCSAvg',\
                 'StdMag','LAUNCH_DATE',and 'OWNER'. Also, a negative sign '-' can be added to the option to sort in descending order.")
     df = df.reset_index(drop=True)
-    mode = 'targets_catalog'
-
-    return SatCatlog(df,mode)               
+    return df              

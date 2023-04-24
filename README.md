@@ -1,13 +1,13 @@
 # Welcome to the SATQUERY package
 
-[![PyPI version shields.io](https://img.shields.io/pypi/v/satcatalogquery.svg)](https://pypi.python.org/pypi/satcatalogquery/) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/satcatalogquery.svg)](https://pypi.python.org/pypi/satcatalogquery/) [![PyPI status](https://img.shields.io/pypi/status/satcatalogquery.svg)](https://pypi.python.org/pypi/satcatalogquery/) [![GitHub contributors](https://img.shields.io/github/contributors/lcx366/SATQUERY.svg)](https://GitHub.com/lcx366/SATQUERY/graphs/contributors/) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/lcx366/SATQUERY/graphs/commit-activity) [![GitHub license](https://img.shields.io/github/license/lcx366/SATQUERY.svg)](https://github.com/lcx366/SATQUERY/blob/master/LICENSE) [![Documentation Status](https://readthedocs.org/projects/pystmos/badge/?version=latest)](http://satcatalogquery.readthedocs.io/?badge=latest) [![Build Status](https://travis-ci.org/lcx366/satcatalogquery.svg?branch=master)](https://travis-ci.org/lcx366/satcatalogquery)
+[![PyPI version shields.io](https://img.shields.io/pypi/v/satcatalogquery.svg)](https://pypi.python.org/pypi/satcatalogquery/) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/satcatalogquery.svg)](https://pypi.python.org/pypi/satcatalogquery/) [![PyPI status](https://img.shields.io/pypi/status/satcatalogquery.svg)](https://pypi.python.org/pypi/satcatalogquery/) [![GitHub contributors](https://img.shields.io/github/contributors/lcx366/SATQUERY.svg)](https://GitHub.com/lcx366/SATQUERY/graphs/contributors/) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/lcx366/SATQUERY/graphs/commit-activity) [![GitHub license](https://img.shields.io/github/license/lcx366/SATQUERY.svg)](https://github.com/lcx366/SATQUERY/blob/master/LICENSE) [![Documentation Status](https://readthedocs.org/projects/satcatalogquery/badge/?version=latest)](http://satcatalogquery.readthedocs.io/?badge=latest) [![Build Status](https://travis-ci.org/lcx366/satcatalogquery.svg?branch=master)](https://travis-ci.org/lcx366/satcatalogquery)
 
-This package is an archive of scientific routines for data processing related to the space targets catalogue query. 
-Currently, operations on  targets catalogue query include:
+This package is an archive of scientific routines for querying orbital and geometric information of spatial objects.
+Currently, operations on objects catalogue query include:
 
-1. targets catalogue query on shape info from DISCOS(Database and Information System Characterising Objects in Space) database;
-2. targets catalogue query on orbit info from CelesTrak database;
-3. targets catalogue query on both shape and orbit from a combined database;
+1. Query of spatial objects on geometric information from DISCOS(Database and Information System Characterising Objects in Space) database;
+2. Query of spatial objects on orbital information from CelesTrak database;
+3. Query of spatial objects on both geometric and orbital information from a combined database;
 
 ## How to Install
 
@@ -34,39 +34,36 @@ Query by NORAD_ID, where type of NORAD_ID can be int/str, list of int/str,  or a
 ```
 
 ```python
->>> from satcatalogquery import discos_query
->>> satcatlog = discos_query(NORAD_ID=[52132,51454,37637,26758,44691])
->>> # satcatog = discos_query(NORAD_ID='satno.txt')
+>>> from satcatalogquery import SatCatalog
+>>> satcatlog = SatCatalog.discos_query(NORAD_ID=[52132,51454,37637,26758,44691])
+>>> # satcatog = SatCatalog.discos_query(NORAD_ID='satno.txt')
 >>> satcatlog.df # output pandas dataframe
->>> satcatlog.save() # save dataframe to .csv file
+>>> satcatlog.to_csv() # save dataframe to .csv file
 ```
 
 Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAvg, etc.
 
 ```python
->>> from satcatalogquery import discos_query
->>> satcatlog = discos_query(SHAPE=['Box','Pan'],RCSAvg=[0.5,100],DECAYED=False)
+>>> satcatlog = SatCatalog.discos_query(SHAPE=['Box','Pan'],RCSAvg=[0.5,10],DECAYED=False)
 ```
 
 #### Targets catalogue query from CelesTrak
 
 ```python
->>> from satcatalogquery import celestrak_query
->>> satcatlog = celestrak_query(MEAN_ALT=[300,2000],ECC=[0.01,0.1],PAYLOAD=False)
+>>> satcatlog = SatCatalog.celestrak_query(MEAN_ALT=[300,2000],ECC=[0.01,0.1],PAYLOAD=False)
 ```
 
 ### Targets catalogue query from combined database
 
 ```python
->>> from satcatalogquery import targets_query
->>> satcatlog = targets_query(DECAYED=False,RCSAvg=[0.25,1e4],MEAN_ALT=[250,2000],TLE_STATUS=True,sort='RCSAvg')
+>>> satcatlog = SatCatalog.objects_query(DECAYED=False,RCSAvg=[0.25,10],MEAN_ALT=[250,2000],TLE_STATUS=True,sort='RCSAvg')
 ```
 
 ### Create object `SatCatlog` from a loacl .csv file
 
 ```python
->>> from satcatalogquery import SatCatlog
->>> satcatlog = SatCatlog.from_csv('filename.csv')
+>>> from satcatalogquery import SatCatalog
+>>> satcatlog = SatCatalog.from_csv('filename.csv')
 ```
 
 ### Statistics
@@ -100,7 +97,23 @@ Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAv
 >>> tle_path = satcatlog.get_tle()
 ```
 
+### Download TLE from Norad IDs
+
+```python
+>>> from satcatalogquery import download_tle
+>>> tle_file = download_tle([52132,51454,37637,26758,44691])
+>>> print(tle_file)
+```
+
 ## Change log
+
+- **0.2.2 — Apr 24, 2023**
+  
+  - Change the method `.save()` to `.to_csv()` 
+  
+  - Add methods `.discos_query()`, `.celestrak_query()`, `.objects_query()`to class SatCatalog
+
+  - Change class `SatCatlog` to `SatCatalog` 
 
 - **0.2.1 — Jan 4, 2023**
   

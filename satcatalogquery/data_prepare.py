@@ -2,7 +2,7 @@ from .data_download import download_satcat, download_qsmag
 
 def satcat_load():
     """
-    load the sats catalog file from CelesTrak
+    load the spatial objects catalog file from CelesTrak
     """
     global sc_file
 
@@ -10,7 +10,7 @@ def satcat_load():
 
 def qsmag_load():
     """
-    load the standard(intrinsic) magnitude for satellites
+    load the standard(intrinsic) magnitude for spatial objects
     """
     global qs_file
 

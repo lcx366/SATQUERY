@@ -2,15 +2,14 @@ import wget
 
 def wget_download(url,dir_file,desc=None):
     """
-    download files by wget command
+    Download files by wget command
 
     Inputs:
         url -> [str]
-        dir_file -> [str] output filename or directory
-    Parameters:
-        desc -> [str] description of the downloading   
+        dir_file -> [str] Path to save the files downloaded
+        desc -> [str,optional,default=None] Log description for file downloading 
     Outpits:
-        wget_out -> [str] path and filename where URL is downloaded to   
+        wget_out -> [str] Path of the files downloaded
 
     """
     if desc: print(desc)

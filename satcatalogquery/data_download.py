@@ -12,13 +12,13 @@ from .try_download import wget_download
 
 def download_satcat():
     """
-    Download or update the satellites catalog file from www.celestrak.com
+    Download or update the spatial objects catalog file from www.celestrak.com
 
     Usage: 
-    scfile = download_satcat()
+        scfile = download_satcat()
     
     Outputs: 
-    scfile -> [str] Local path of the satellites catalog file
+        scfile -> [str] Path of the spatial objects catalog file
     """
     home = str(Path.home())
     direc = home + '/src/satcat-data/'
@@ -42,13 +42,13 @@ def download_satcat():
 
 def download_qsmag():
     """
-    Download or update the file which records the standard(intrinsic) magnitude for satellites from https://www.prismnet.com/~mmccants/programs/qsmag.zip
+    Download or update the file which records the standard(intrinsic) magnitude for space objects from https://www.prismnet.com/~mmccants/programs/qsmag.zip
     
     Usage: 
-    qsfile = download_qsmag()
+        qsfile = download_qsmag()
     
     Outputs: 
-    qsfile -> [str] Local path of the qs.mag file
+        qsfile -> [str] Path of the qs.mag file
     """
     home = str(Path.home())
     direc = home + '/src/satcat-data/'
@@ -83,24 +83,24 @@ def download_tle(noradids,mode='keep',dir_TLE='TLE/'):
     Download the TLE/3LE data from [SPACETRACK](https://www.space-track.org) automatically
 
     Usage: 
-    tlefile = tle_download(noradids)
-    tlefile = tle_download(noradids,'clear')
-    tlefile = tle_download('satno.txt')
+        tle_file = tle_download(noradids)
+        tle_file = tle_download(noradids,'clear')
+        tle_file = tle_download('satno.txt')
 
     Inputs:
-    noradids -> [str, int, list of str/int] NORADID of space targets. 
-    It can be a single NORADID, list of NORADID, or a file containing a set of NORADID.
-    The form and format of the file is as follows:
-    #satno
-    12345
-    23469
-    ...
+        noradids -> [str, int, list of str/int] NORADID of space targets. 
+        It can be a single NORADID, list of NORADID, or a file containing a set of NORADID.
+        The form and format of the file is as follows:
+        #satno
+        12345
+        23469
+        ...
 
-    Parameters:
-    mode -> [str,default='keep'] either keep the files stored in TLE directory or clear the TLE directory 
+        mode -> [str,optional,default='keep'] Either 'keep' the files stored in TLE directory or 'clear' the TLE directory 
+        dir_TLE -> [str,optional,default='TLE/'] Path to save TLE
 
     Outputs: 
-    tlefile  -> [str] Path of TLE/3LE file.
+        tle_file  -> [str] Path of TLE/3LE file.
     """
     # Check whether a list is empty or not
     if not noradids: raise Exception('noradids is empty.')
@@ -165,6 +165,7 @@ def download_tle(noradids,mode='keep',dir_TLE='TLE/'):
         sleep(j+5) 
         j += 1   
     file_tle.close()
+    print()
 
     missed_ids = list(set(noradids)-set(valid_ids))
     if missed_ids: 
