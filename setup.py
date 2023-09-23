@@ -2,7 +2,7 @@ from setuptools import setup,find_packages
 
 setup(
     name='satcatalogquery',
-    version='0.2.2',
+    version='0.2.3',
     description='A package for querying orbital and geometric information of spatial objects',
     author='Chunxiao Li',
     author_email='lcx366@126.com',

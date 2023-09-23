@@ -2,7 +2,7 @@
 
 [![PyPI version shields.io](https://img.shields.io/pypi/v/satcatalogquery.svg)](https://pypi.python.org/pypi/satcatalogquery/) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/satcatalogquery.svg)](https://pypi.python.org/pypi/satcatalogquery/) [![PyPI status](https://img.shields.io/pypi/status/satcatalogquery.svg)](https://pypi.python.org/pypi/satcatalogquery/) [![GitHub contributors](https://img.shields.io/github/contributors/lcx366/SATQUERY.svg)](https://GitHub.com/lcx366/SATQUERY/graphs/contributors/) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/lcx366/SATQUERY/graphs/commit-activity) [![GitHub license](https://img.shields.io/github/license/lcx366/SATQUERY.svg)](https://github.com/lcx366/SATQUERY/blob/master/LICENSE) [![Documentation Status](https://readthedocs.org/projects/satcatalogquery/badge/?version=latest)](http://satcatalogquery.readthedocs.io/?badge=latest) [![Build Status](https://travis-ci.org/lcx366/satcatalogquery.svg?branch=master)](https://travis-ci.org/lcx366/satcatalogquery)
 
-This package is an archive of scientific routines for querying orbital and geometric information of spatial objects.
+This package is an archive of scientific routines for querying orbital and geometric information of space objects.
 Currently, operations on objects catalogue query include:
 
 1. Query of spatial objects on geometric information from DISCOS(Database and Information System Characterising Objects in Space) database;
@@ -20,7 +20,7 @@ pip install satcatalogquery --upgrade # to upgrade a pre-existing installation
 
 ## How to use
 
-### Targets catalogue query from DISCOS
+### Objects catalogue query from DISCOS
 
 Query by NORAD_ID, where type of NORAD_ID can be int/str, list of int/str,  or a text file named satno.txt in the following format:
 
@@ -47,13 +47,13 @@ Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAv
 >>> satcatlog = SatCatalog.discos_query(SHAPE=['Box','Pan'],RCSAvg=[0.5,10],DECAYED=False)
 ```
 
-#### Targets catalogue query from CelesTrak
+#### Objects catalogue query from CelesTrak
 
 ```python
 >>> satcatlog = SatCatalog.celestrak_query(MEAN_ALT=[300,2000],ECC=[0.01,0.1],PAYLOAD=False)
 ```
 
-### Targets catalogue query from combined database
+### Objects catalogue query from combined database
 
 ```python
 >>> satcatlog = SatCatalog.objects_query(DECAYED=False,RCSAvg=[0.25,10],MEAN_ALT=[250,2000],TLE_STATUS=True,sort='RCSAvg')
@@ -91,13 +91,13 @@ Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAv
   <img src="readme_figs/LAUNCH_SITE.png" width="500" />
 </p>
 
-### Download TLE from results of targets catalogue query
+### Download TLE from Space-Track according to the results of objects catalogue query
 
 ```python
 >>> tle_path = satcatlog.get_tle()
 ```
 
-### Download TLE from Norad IDs
+### Download TLE from Space-Track by Norad IDs
 
 ```python
 >>> from satcatalogquery import download_tle
@@ -107,12 +107,16 @@ Query by mutiple options at the same time, such as COSPAR_ID, MASS, SHAPE, RCSAv
 
 ## Change log
 
+- **0.2.3 — Sep 23, 2023**
+  
+  - Fixed the bug that when downloading TLE data from SpaceTrack, the automatically generated wrong authentication file due to incorrect user name or password input could no longer be updated.
+
 - **0.2.2 — Apr 24, 2023**
   
   - Change the method `.save()` to `.to_csv()` 
   
   - Add methods `.discos_query()`, `.celestrak_query()`, `.objects_query()`to class SatCatalog
-
+  
   - Change class `SatCatlog` to `SatCatalog` 
 
 - **0.2.1 — Jan 4, 2023**

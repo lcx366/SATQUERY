@@ -157,7 +157,13 @@ def download_tle(noradids,mode='keep',dir_TLE='TLE/'):
     for part in noradids_parts:
         desc = 'Downloading TLE data: Part {:s}{:2d}{:s} of {:2d}'.format(Fore.BLUE,j,Fore.RESET,part_num)
         print(desc,end='\r')
-        lines_tle = st.tle_latest(norad_cat_id=part,ordinal=1,iter_lines=True,format='tle')    
+
+        try:
+            lines_tle = st.tle_latest(norad_cat_id=part,ordinal=1,iter_lines=True,format='tle')  
+        except:       
+            remove(loginfile)
+            raise ConnectionError("401 Unauthorized: username or password entered incorrectly!")      
+
         for line in lines_tle:
             words = line.split()
             if words[0] == '2': valid_ids.append(words[1].lstrip('0'))
