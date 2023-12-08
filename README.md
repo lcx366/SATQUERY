@@ -109,6 +109,11 @@ Next, you may be interested in [Data processing related to TLE files](https://gi
 
 ## Change log
 
+- **0.2.4 — Dec 08, 2023**
+  
+  - Fixed a bug where a newline character was appended to the end of the string when reading tokens from a file.
+  - The download URL of qsmag.zip has been modified to solve the bug that caused the file download failure due to the original URL being invalid.
+
 - **0.2.3 — Sep 23, 2023**
   
   - Fixed the bug that when downloading TLE data from SpaceTrack, the automatically generated wrong authentication file due to incorrect user name or password input could no longer be updated.
@@ -131,7 +136,12 @@ Next, you may be interested in [Data processing related to TLE files](https://gi
   
   - The ***satcatalogquery*** package was released.
 
-## Reference
+## Next Release
+
+- Added DISCOSweb API support for version [2.0.0](https://discosweb.esoc.esa.int/apidocs/v2).
+- Improve code structure and enrich technical documentation.
+
+# Reference
 
 - [DISCOSweb](https://discosweb.esoc.esa.int)
 - [CelesTrak](http://www.celestrak.com) and [SATCAT Format Documentation](https://celestrak.org/satcat/satcat-format.php)

@@ -74,8 +74,8 @@ def _discos_query(COSPAR_ID=None,NORAD_ID=None,OBJECT_CLASS=None,PAYLOAD=None,DE
         outfile_token.close()
     else:
         infile = open(tokenfile,'r')
-        token = infile.readline()
-        infile.close()
+        token = infile.readline().strip()
+        infile.close()   
     
     URL = 'https://discosweb.esoc.esa.int'
     params = {}
@@ -242,7 +242,13 @@ def _discos_query(COSPAR_ID=None,NORAD_ID=None,OBJECT_CLASS=None,PAYLOAD=None,DE
     
     while True:
         params['page[size]'] = 100 # Number of entries on each page   
-        response = requests.get(f'{URL}/api/objects',headers = {'Authorization': f'Bearer {token}'},params = params)
+        response = requests.get(f'{URL}/api/objects',
+            headers = {
+            'Authorization': f'Bearer {token}',
+            'DiscosWeb-Api-Version': '1',
+            },
+            params = params)
+
         doc = response.json()
 
         if response.ok:
@@ -266,7 +272,7 @@ def _discos_query(COSPAR_ID=None,NORAD_ID=None,OBJECT_CLASS=None,PAYLOAD=None,DE
     
     # Rename the columns and readjust the order of the columns  
     old_column = ['height', 'xSectMax', 'name', 'satno', 'objectClass','mass', 'xSectMin', 'depth', 'xSectAvg', 'length', 'shape', 'cosparId']
-    new_column = ['HEIGhT', 'RCSMax', 'OBJECT_NAME', 'NORAD_ID', 'OBJECT_CLASS', 'MASS', 'RCSMin[m2]', 'DEPTH', 'RCSAvg', 'LENGTH', 'SHAPE', 'COSPAR_ID']
+    new_column = ['HEIGHT', 'RCSMax', 'OBJECT_NAME', 'NORAD_ID', 'OBJECT_CLASS', 'MASS', 'RCSMin[m2]', 'DEPTH', 'RCSAvg', 'LENGTH', 'SHAPE', 'COSPAR_ID']
     # units: MASS in [kg]; RCS in [m2]; DEPTH, LENGTH, and HEIGHT in [m]
     new_column_reorder = ['OBJECT_NAME','COSPAR_ID', 'NORAD_ID','OBJECT_CLASS','MASS','SHAPE','HEIGHT','LENGTH','DEPTH','RCSMin','RCSMax','RCSAvg']
     df = pd.DataFrame.from_dict(extract,dtype=object).rename(columns=dict(zip(old_column, new_column)), errors='raise')
