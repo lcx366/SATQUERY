@@ -55,7 +55,7 @@ def download_qsmag():
     
     qsfile_zip = direc + 'qsmag.zip'
     qsfile = direc + 'qs.mag'
-    url = 'https://www.prismnet.com/~mmccants/programs/qsmag.zip'
+    url = 'https://www.mmccants.org/programs/qsmag.zip'
 
     if not path.exists(direc): makedirs(direc)
     if not path.exists(qsfile):
